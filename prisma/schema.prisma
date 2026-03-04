@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  photos    Photo[]
+  tryOns    TryOn[]
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  path      String
+  label     String?
+  createdAt DateTime @default(now())
+  tryOns    TryOn[]
+}
+
+model TryOn {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  photoId       String
+  photo         Photo    @relation(fields: [photoId], references: [id])
+  clothingUrl   String
+  clothingName  String?
+  clothingImage String?
+  resultImage   String?
+  status        String   @default("pending") // pending | scraping | generating | done | failed
+  error         String?
+  createdAt     DateTime @default(now())
+}
